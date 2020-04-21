@@ -26,16 +26,11 @@ class tic_tac_toe:
         self.active = False
         self.winner = marker
 
-    diag = 0
-    anti_diag = 0
-    for i in range(0,3):
-      diag += self.board[i,i]
-      anti_diag += self.board[i,2-i]
-    
-    if abs(diag) == 3:
+    if abs(sum(self.board.diagonal())) == 3:
       self.active = False
       self.winner = marker
-    elif abs(anti_diag) == 3:
+  
+    if abs(sum(np.fliplr(self.board).diagonal())) == 3:
       self.active = False
       self.winner = marker
     
@@ -58,8 +53,8 @@ class tic_tac_toe:
 
 
 game = tic_tac_toe()
-game.place(1,(0,0))
-game.place(1,(0,1))
 game.place(1,(0,2))
+game.place(1,(1,1))
+game.place(1,(2,0))
 game.draw()
 

@@ -9,7 +9,7 @@ class tic_tac_toe:
   
   def map_to_xo(self,val):
     if val == 0:
-      return 0
+      return '-'
     elif val == 1:
       return 'X'
     elif val == -1:
@@ -52,9 +52,9 @@ class tic_tac_toe:
       print("Game won by player {}".format(self.winner))
 
 
-game = tic_tac_toe()
-game.place(1,(0,2))
-game.place(1,(1,1))
-game.place(1,(2,0))
-game.draw()
+# game = tic_tac_toe()
+# game.place(1,(0,2))
+# game.place(1,(1,1))
+# game.place(1,(2,0))
+# game.draw()
 

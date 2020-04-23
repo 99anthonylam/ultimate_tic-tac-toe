@@ -13,7 +13,7 @@ class bigTTT:
         self.boards = [tic_tac_toe() for x in range(9)]
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
-        self.players[1].configureMarker(-1)
+        self.players[1].configureMarker(2)
 
     def checkVictory(self, marker):
         # check horizontals

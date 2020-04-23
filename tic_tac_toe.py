@@ -12,7 +12,7 @@ class tic_tac_toe:
       return '-'
     elif val == 1:
       return 'X'
-    elif val == -1:
+    elif val == 2:
       return 'O'
   
   def check_won(self, marker):
@@ -33,8 +33,6 @@ class tic_tac_toe:
     if abs(sum(np.fliplr(self.board).diagonal())) == 3:
       self.active = False
       self.winner = marker
-    
-
 
   def draw(self):
     for i, row in enumerate(self.board):

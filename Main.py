@@ -1,6 +1,6 @@
 from tic_tac_toe import *
-from bigTTT import *
+from ultimate_ttt import *
 
 if __name__ == "__main__":
-    game = bigTTT()
+    game = ultimate_ttt()
     # print(len(game.boards))

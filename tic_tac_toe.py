@@ -3,13 +3,13 @@ import math
 
 class tic_tac_toe:
   def __init__(self):
-    self.board = np.zeros((3, 3))
+    self.board = np.zeros((3, 3)).astype(int)
     self.active = True
     self.winner = None
   
   def map_to_xo(self,val):
     if val == 0:
-      return '-'
+      return ' '
     elif val == 1:
       return 'X'
     elif val == 2:
@@ -43,7 +43,8 @@ class tic_tac_toe:
       print("-----------")
     
   def place(self, marker, move):
-    row, col = move
+    row = int((move-1)/3)
+    col = (move-1)%3
     self.board[row][col] = marker
     self.check_won(marker)
     if not self.active:
@@ -55,4 +56,3 @@ class tic_tac_toe:
 # game.place(1,(1,1))
 # game.place(1,(2,0))
 # game.draw()
-

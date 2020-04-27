@@ -15,7 +15,7 @@ class tic_tac_toe:
     elif val == 2:
       return 'O'
   
-  def check_won(self, marker):
+  def checkVictory(self, marker):
     for row in self.board:
       if abs(sum(row)) == 3:
         self.active = False
@@ -46,9 +46,7 @@ class tic_tac_toe:
     row = int((move-1)/3)
     col = (move-1)%3
     self.board[row][col] = marker
-    self.check_won(marker)
-    if not self.active:
-      print("Game won by player {}".format(self.winner))
+    self.checkVictory(marker)
 
 
 # game = tic_tac_toe()

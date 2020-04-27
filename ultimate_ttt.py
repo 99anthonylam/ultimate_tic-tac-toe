@@ -11,33 +11,42 @@ from player import *
 
 class ultimate_ttt:
     def __init__(self):
-        self.board = [tic_tac_toe() for x in range(9)]
-        self.won = False
+        self.board = [tic_tac_toe() for _ in range(9)]
+        self.active = True
+        self.winner = None
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
 
     def checkVictory(self, marker):
-        # check horizontals
-        if ((self.boards[0].winner.equals(marker) and self.boards[1].winner.equals(marker) and self.boards[
-            2].winner.equals(marker))
-                or (self.boards[4].winner.equals(marker) and self.boards[5].winner.equals(marker) and self.boards[
-                    6].winner.equals(marker))
-                or (self.boards[7].winner.equals(marker) and self.boards[8].winner.equals(marker) and self.boards[
-                    9].winner.equals(marker))
-                # check columns
-                or (self.boards[1].winner.equals(marker) and self.boards[4].winner.equals(marker) and self.boards[
-                    7].winner.equals(marker))
-                or (self.boards[2].winner.equals(marker) and self.boards[5].winner.equals(marker) and self.boards[
-                    8].winner.equals(marker))
-                or (self.boards[3].winner.equals(marker) and self.boards[6].winner.equals(marker) and self.boards[
-                    9].winner.equals(marker))
-                # diagonals
-                or (self.boards[1].winner.equals(marker) and self.boards[5].winner.equals(marker) and self.boards[
-                    9].winner.equals(marker))
-                or (self.boards[3].winner.equals(marker) and self.boards[5].winner.equals(marker) and self.boards[
-                    7].winner.equals(marker))):
-            return True
+        g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
+        # Check Rows
+        if (None != g1.winner == g2.winner == g3.winner):
+            self.active = False
+            self.winner = marker
+        elif (None != g4.winner == g5.winner == g6.winner):
+            self.active = False
+            self.winner = marker
+        elif (None != g7.winner == g8.winner == g9.winner):
+            self.active = False
+            self.winner = marker
+        # Check Columns
+        elif (None != g1.winner == g4.winner == g7.winner):
+            self.active = False
+            self.winner = marker
+        elif (None != g2.winner == g5.winner == g8.winner):
+            self.active = False
+            self.winner = marker
+        elif (None != g3.winner == g6.winner == g9.winner):
+            self.active = False
+            self.winner = marker
+        # Check Diagonals
+        elif (None != g1.winner == g5.winner == g9.winner):
+            self.active = False
+            self.winner = marker
+        elif (None != g3.winner == g5.winner == g7.winner):
+            self.active = False
+            self.winner = marker
 
     def draw(self):
         dummy = tic_tac_toe()
@@ -73,37 +82,37 @@ class ultimate_ttt:
         pos = int(move%10) 
         game = int((move-pos)/10) 
         if pos < 1 or pos > 9:
-            return False
+            return (False,"Out of bounds")
         if game < 1 or game > 9:
-            return False
+            return (False, "Out of bounds")
         row = int((pos-1)/3)
         col = (pos-1)%3
-        if self.board[game-1].board[row][col] != 0:
-            return False
+
         if self.board[game-1].active:
             if game != last_move and last_move != None:
-                return False
-        return True
-
-
+                return (False, "Not in correct game")
+            if self.board[game-1].board[row][col] != 0:
+                return (False, "Spot is taken")
+        else:
+            return (False, "Game has been won")
+        return (True,None)
 
     def play(self):
         player = 1
         last_move = None
-        while (not self.won):
+        while (self.active):
             print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self,player)))
             move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
+            while (self.isValid(move, last_move)[0] == False):
+                print("Your move is not valid - {}".format(self.isValid(move, last_move)[1]))
+                move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
             pos = int(move%10) #e.g. 9
             game = int((move-pos)/10) #e.g. 3
-            while (self.isValid(move, last_move) == False):
-                print("Your move is not valid. Make sure it is between 11 and 99, is in a valid position, and is in the grid as forced by last player")
-                move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
             last_move = pos
             self.board[game-1].place(player, pos)
             self.draw()
-            if self.checkVictory():
+            if self.checkVictory(player):
                 print("Game has been won!")
-
             if player == 1:
                 player = 2
             else:

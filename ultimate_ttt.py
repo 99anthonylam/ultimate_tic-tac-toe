@@ -113,10 +113,8 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-            if player == 1:
-                player = 2
-            else:
-                player = 1
+
+            player *= -1
 
 game = ultimate_ttt()
 game.play()

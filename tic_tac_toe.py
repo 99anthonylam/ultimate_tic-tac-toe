@@ -12,7 +12,7 @@ class tic_tac_toe:
       return ' '
     elif val == 1:
       return 'X'
-    elif val == 2:
+    elif val == -1:
       return 'O'
   
   def checkVictory(self, marker):

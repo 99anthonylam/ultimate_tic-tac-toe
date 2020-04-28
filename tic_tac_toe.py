@@ -3,7 +3,7 @@ import math
 
 class tic_tac_toe:
   def __init__(self):
-    self.board = np.zeros((1,9)).astype(int)
+    self.board = np.zeros((3,3)).astype(int)
     self.active = True
     self.winner = None
   
@@ -33,6 +33,9 @@ class tic_tac_toe:
     if abs(sum(np.fliplr(self.board).diagonal())) == 3:
       self.active = False
       self.winner = marker
+    
+    if not np.any(self.board==0):
+      self.active = False
 
   def draw(self):
     for i, row in enumerate(self.board):
@@ -49,7 +52,8 @@ class tic_tac_toe:
     self.checkVictory(marker)
 
 # game = tic_tac_toe()
-# game.place(1,(0,2))
-# game.place(1,(1,1))
-# game.place(1,(2,0))
+# print(game.active)
+# for i in range(1,10):
+#   game.place(1,i)
 # game.draw()
+# print(game.active)

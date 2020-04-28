@@ -16,23 +16,25 @@ class tic_tac_toe:
       return 'O'
   
   def checkVictory(self, marker):
+    def updateWinner(self,marker):
+      self.active = False
+      self.winner = marker
+      self.board = np.zeros((3,3)).astype(int)
+      self.board[1][1] = marker
+
     for row in self.board:
       if abs(sum(row)) == 3:
-        self.active = False
-        self.winner = marker
+        updateWinner(self, marker)
     
     for i in range(0,3):
       if abs(sum(self.board[:,i])) == 3:
-        self.active = False
-        self.winner = marker
+        updateWinner(self, marker)
 
     if abs(sum(self.board.diagonal())) == 3:
-      self.active = False
-      self.winner = marker
+      updateWinner(self, marker)
   
     if abs(sum(np.fliplr(self.board).diagonal())) == 3:
-      self.active = False
-      self.winner = marker
+      updateWinner(self, marker)
     
     if not np.any(self.board==0):
       self.active = False
@@ -50,10 +52,3 @@ class tic_tac_toe:
     col = (move-1)%3
     self.board[row][col] = marker
     self.checkVictory(marker)
-
-# game = tic_tac_toe()
-# print(game.active)
-# for i in range(1,10):
-#   game.place(1,i)
-# game.draw()
-# print(game.active)

@@ -25,7 +25,6 @@ class MCTS:
         self.wins = 0 # value of the node (# wins from this node)
         self.visits = 0 # number of times visited this node
         self.children = dict() # children of each node
-        self.weight = weight
 
     def choose(self, node):
         # Choose which successor of node to go to. (Next move in game)
@@ -37,7 +36,14 @@ class MCTS:
 
         return max(self.children[node])
 
+    def value(n): # calculates value of the node
+        if self.visits(n) == 0:
+            return float("-inf") # avoid moves not seen
+        return self.wins[n] / self.visits[n] # average weight
+
     def find_Rchild(self.board): # picks one random child of current node
+        if self.board.checkVictory(player):
+            return None
 
     def find_child(self.board): # finds all child of current node
 
@@ -50,6 +56,8 @@ class MCTS:
             path.append(node)
             if node not in self.children or not self.children[node]: # node not explored
                 return path
+
+    def UCT(self, node):
 
     def backpropagate(path, reward):
         # sends the # of wins back up to the ancester node of the current node

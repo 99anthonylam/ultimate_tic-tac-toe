@@ -35,8 +35,8 @@ class tic_tac_toe:
     if abs(sum(np.fliplr(self.board).diagonal())) == 3:
       updateWinner(self, marker)
     
-    # if not np.any(self.board==0):
-      # self.active = False
+    if not np.any(self.board==0):
+      self.active = False
 
   def draw(self):
     for i, row in enumerate(self.board):

@@ -103,7 +103,6 @@ class ultimate_ttt:
         self.board[game - 1].empty(pos)
         self.board[game - 1].active = True
 
-
     def isValid(self, move, last_move):
         pos = int(move%10) 
         game = int((move-pos)/10) 
@@ -124,7 +123,7 @@ class ultimate_ttt:
         return (True,None)
 
     def nextMoveHelper(self):
-        if self.last_move is None or self.board[self.last_move-1].active() is False:
+        if self.last_move is None or self.board[self.last_move-1].active is False:
             return "anywhere (_ _). For example, 39 will place your marker in the bottom right tile of the top right tic tac toe."
         else:
             switcher = {1: "in the top-left (1_)",
@@ -160,7 +159,13 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-            self.minmaxAgent.recursive(self, -1, -1, 1, 1, 1)
+            chosenTile = self.minmaxAgent.algorithm(self, player*-1, self.getPossibleActions())
+            pos = int(chosenTile%10) #e.g. 9
+            game = int((chosenTile-pos)/10) #e.g. 3
+            self.board[game-1].place(player*-1, pos)
+            self.draw()
+
+
             player *= -1
 
     def instantWin(self, currentPlayer, move):
@@ -171,10 +176,52 @@ class ultimate_ttt:
             return False
         self.board[game - 1].place(currentPlayer, pos)
         self.checkVictory(currentPlayer)
-        # self.emptyTile(move)
+        self.emptyTile(move)
         if self.active is False:  # reverting changes from the previous checkVictory call
             won = True
             self.active = True
             self.winner = None
         return won
+
+    def contrastCompare(self, old, new):
+        oldTiles = old.getPossibleActions()
+        newTiles = new.getPossibleActions()
+        print("we are comparing " + (str(oldTiles)) + " and " + str(newTiles))
+        output = []
+        for tile in newTiles:
+            if tile not in oldTiles:
+                output.add(tile)
+        return output
+
+
+    def heuristics(self, currentPlayer):
+        center_spots = [51, 52, 53, 54, 55, 56, 57, 58, 59, 15, 25, 35, 45, 65, 75, 85, 95]  # high value tile locations
+        corner_boards = [1, 3, 7, 9]  # small tic tac toe boards
+        score = 0
+        positions = self.allTilesbyPlayer(currentPlayer)
+        for play in positions:
+            pos = int(play % 10)  # e.g. 9
+            game = int((play - pos) / 10)  # e.g. 3
+            self.board[game - 1].place(currentPlayer, pos)
+            if self.board[game-1].winner == currentPlayer:
+                score += 5
+                if game-1 in corner_boards:  # if the small game is a corner game, extra points
+                    score += 3
+                elif game-1 == 5:  # if small game is the center game, even more points
+                    score += 10
+            self.emptyTile(play)
+            if play in center_spots:  # just if the spot itself is valuable
+                score += 3
+        print("Calculated score for moves " + str(positions) + " is " + str(score))
+        return score
+
+    def allTilesbyPlayer(self, player):
+        temp = [game for game in self.board]
+        ans = []
+        for game in temp:
+            temp = game.board.flatten()
+            temp = np.argwhere(temp == player).flatten() + (game.id * 10) + 1
+            ans.extend(temp)
+        return ans
+
 

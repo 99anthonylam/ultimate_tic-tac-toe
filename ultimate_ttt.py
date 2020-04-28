@@ -4,6 +4,7 @@ import random
 import code
 from tic_tac_toe import *
 from player import *
+from minmax import *
 
 # boards and squares are interpreted with the following NUMPAD system:
 # | 1 | 2 | 3 |
@@ -19,6 +20,7 @@ class ultimate_ttt:
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
+        self.minmaxAgent = minmax()
 
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
@@ -114,19 +116,42 @@ class ultimate_ttt:
             return (False, "Game has been won")
         return (True,None)
 
+    def nextMoveHelper(self):
+        if self.last_move is None:
+            return "anywhere (_ _). For example, 39 will place your marker in the bottom right tile of the top right tic tac toe."
+        else:
+            switcher = {1: "in the top-left (1_)",
+                        2: "in the top-center (2_)",
+                        3: "in the top-right (3_)",
+                        4: "in the center-left (4_)",
+                        5: "in the center (5_)",
+                        6: "in the center-right (6_)",
+                        7: "in the bottom-left (7_)",
+                        8: "in the bottom-center (8_)",
+                        9: "in the bottom-right (9_)"}
+            return switcher.get(self.last_move)
+
+
     def play(self):
         player = 1
         while (self.active):
             print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self,player)))
-            move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
-            while (self.isValid(move, last_move)[0] == False):
-                print("Your move is not valid - {}".format(self.isValid(move, last_move)[1]))
-                move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
+            while True:
+                try:
+                    move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+                    break
+                except (ValueError):
+                    print("Please input a valid int")
+
+            while (self.isValid(move, self.last_move)[0] == False):
+                print("Your move is not valid - {}".format(self.isValid(move, self.last_move)[1]))
+                move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
             pos = int(move%10) #e.g. 9
             game = int((move-pos)/10) #e.g. 3
-            last_move = pos
+            self.last_move = pos
             self.board[game-1].place(player, pos)
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
+            self.minmaxAgent.recursive(self, -1, -1, 1, 1, 1)
             player *= -1

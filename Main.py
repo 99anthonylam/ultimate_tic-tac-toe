@@ -35,8 +35,31 @@ class MCTS:
         if node not in self.children:
             return node.find_Rchild()
 
-    def find_Rchild(self.board):
-        if self.board.terminal:
-            return None # game is done so no move can be done
-        # [code] go through board
-        # [code] make move
+        return max(self.children[node])
+
+    def find_Rchild(self.board): # picks one random child of current node
+
+    def find_child(self.board): # finds all child of current node
+
+    def rollout(self, node): # adds more to the tree basically
+        path = self.find(node)
+
+    def selection(self, node): # used to find an unexplored descendent of the node
+        path = []
+        while True:
+            path.append(node)
+            if node not in self.children or not self.children[node]: # node not explored
+                return path
+
+    def backpropagate(path, reward):
+        # sends the # of wins back up to the ancester node of the current node
+        for node in reversed(path):
+            self.wins[node] += reward
+            self.visits[node] += 1
+
+    def expand(self, node):
+        if node in self.children:
+                return # already expanded so don't need to expand
+        self.children[node] = node.find_child()
+
+    def simulate(self, node):

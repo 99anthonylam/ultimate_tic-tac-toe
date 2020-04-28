@@ -48,6 +48,16 @@ class tic_tac_toe:
     self.board[row][col] = marker
     self.checkVictory(marker)
 
+  def printHelper(self):
+    # row1, row2, row3 = ""
+    for i, row in enumerate(self.board):
+      row = list(map(self.map_to_xo,row))
+      print(row)
+      ("{} | {} | {}".format(row[0],row[1],row[2]))
+      if i == 2:
+        break
+      # print("-----------")
+
 
 # game = tic_tac_toe()
 # game.place(1,(0,2))

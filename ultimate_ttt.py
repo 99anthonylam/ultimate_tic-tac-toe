@@ -21,30 +21,30 @@ class ultimate_ttt:
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
         # Check Rows
-        if (None != g1.winner == g2.winner == g3.winner):
+        if (marker == g1.winner == g2.winner == g3.winner):
             self.active = False
             self.winner = marker
-        elif (None != g4.winner == g5.winner == g6.winner):
+        elif (marker == g4.winner == g5.winner == g6.winner):
             self.active = False
             self.winner = marker
-        elif (None != g7.winner == g8.winner == g9.winner):
+        elif (marker == g7.winner == g8.winner == g9.winner):
             self.active = False
             self.winner = marker
         # Check Columns
-        elif (None != g1.winner == g4.winner == g7.winner):
+        elif (marker == g1.winner == g4.winner == g7.winner):
             self.active = False
             self.winner = marker
-        elif (None != g2.winner == g5.winner == g8.winner):
+        elif (marker == g2.winner == g5.winner == g8.winner):
             self.active = False
             self.winner = marker
-        elif (None != g3.winner == g6.winner == g9.winner):
+        elif (marker == g3.winner == g6.winner == g9.winner):
             self.active = False
             self.winner = marker
         # Check Diagonals
-        elif (None != g1.winner == g5.winner == g9.winner):
+        elif (marker == g1.winner == g5.winner == g9.winner):
             self.active = False
             self.winner = marker
-        elif (None != g3.winner == g5.winner == g7.winner):
+        elif (marker == g3.winner == g5.winner == g7.winner):
             self.active = False
             self.winner = marker
 

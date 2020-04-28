@@ -14,6 +14,7 @@ class ultimate_ttt:
         self.board = [tic_tac_toe() for _ in range(9)]
         self.active = True
         self.winner = None
+        self.last_move = None
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
@@ -78,6 +79,13 @@ class ultimate_ttt:
                 break
             print("-----------||-----------||-----------")
     
+    def getPossibleActions(self):
+        if last_move == None:
+            return [x for x in range(11,100)]
+        else:
+            temp = np.reshape(self.board[last_move-1],(1,9)).flatten()
+            return np.argwhere(temp==0).flatten()
+    
     def isValid(self, move, last_move):
         pos = int(move%10) 
         game = int((move-pos)/10) 
@@ -99,13 +107,11 @@ class ultimate_ttt:
 
     def play(self):
         player = 1
-        last_move = None
         while (self.active):
             print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self,player)))
             move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
             while (self.isValid(move, last_move)[0] == False):
-                print("Your move is not valid - {}".format
-                      (self.isValid(move, last_move)[1]))
+                print("Your move is not valid - {}".format(self.isValid(move, last_move)[1]))
                 move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
             pos = int(move%10) #e.g. 9
             game = int((move-pos)/10) #e.g. 3

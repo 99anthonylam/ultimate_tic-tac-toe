@@ -20,7 +20,7 @@ class ultimate_ttt:
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
-        self.minmaxAgent = minmax()
+        # self.minmaxAgent = minmax()
 
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
@@ -153,5 +153,8 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-            self.minmaxAgent.recursive(self, -1, -1, 1, 1, 1)
+            # self.minmaxAgent.recursive(self, -1, -1, 1, 1, 1)
             player *= -1
+
+game = ultimate_ttt()
+game.play()

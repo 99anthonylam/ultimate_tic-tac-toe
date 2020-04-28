@@ -20,8 +20,6 @@ class tic_tac_toe:
     def updateWinner(self,marker):
       self.active = False
       self.winner = marker
-      self.board = np.zeros((3,3)).astype(int)
-      self.board[1][1] = marker
 
     for row in self.board:
       if abs(sum(row)) == 3:

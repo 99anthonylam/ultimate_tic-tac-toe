@@ -20,7 +20,7 @@ class ultimate_ttt:
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
-        # self.minmaxAgent = minmax()
+        self.minmaxAgent = minmax()
 
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
@@ -96,7 +96,14 @@ class ultimate_ttt:
                 temp = np.argwhere(temp==0).flatten() + (game.id * 10) + 1
                 ans.extend(temp)
             return ans
-    
+
+    def emptyTile(self, move):
+        pos = int(move % 10)  # e.g. 9
+        game = int((move - pos) / 10)  # e.g. 3
+        self.board[game - 1].empty(pos)
+        self.board[game - 1].active = True
+
+
     def isValid(self, move, last_move):
         pos = int(move%10) 
         game = int((move-pos)/10) 
@@ -117,7 +124,7 @@ class ultimate_ttt:
         return (True,None)
 
     def nextMoveHelper(self):
-        if self.last_move is None:
+        if self.last_move is None or self.board[self.last_move-1].active() is False:
             return "anywhere (_ _). For example, 39 will place your marker in the bottom right tile of the top right tic tac toe."
         else:
             switcher = {1: "in the top-left (1_)",
@@ -153,8 +160,21 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-            # self.minmaxAgent.recursive(self, -1, -1, 1, 1, 1)
+            self.minmaxAgent.recursive(self, -1, -1, 1, 1, 1)
             player *= -1
 
-game = ultimate_ttt()
-game.play()
+    def instantWin(self, currentPlayer, move):
+        won = False
+        pos = int(move % 10)  # e.g. 9
+        game = int((move - pos) / 10)  # e.g. 3
+        if self.board[game - 1].active is False:  # small field is already won so don't bother
+            return False
+        self.board[game - 1].place(currentPlayer, pos)
+        self.checkVictory(currentPlayer)
+        # self.emptyTile(move)
+        if self.active is False:  # reverting changes from the previous checkVictory call
+            won = True
+            self.active = True
+            self.winner = None
+        return won
+

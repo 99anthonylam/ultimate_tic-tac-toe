@@ -104,7 +104,8 @@ class ultimate_ttt:
             print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self,player)))
             move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
             while (self.isValid(move, last_move)[0] == False):
-                print("Your move is not valid - {}".format(self.isValid(move, last_move)[1]))
+                print("Your move is not valid - {}".format
+                      (self.isValid(move, last_move)[1]))
                 move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
             pos = int(move%10) #e.g. 9
             game = int((move-pos)/10) #e.g. 3

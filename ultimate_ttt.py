@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import random
+import code
 from tic_tac_toe import *
 from player import *
 
@@ -11,7 +12,7 @@ from player import *
 
 class ultimate_ttt:
     def __init__(self):
-        self.board = [tic_tac_toe() for _ in range(9)]
+        self.board = [tic_tac_toe(i) for i in range(1,10)]
         self.active = True
         self.winner = None
         self.last_move = None
@@ -50,7 +51,7 @@ class ultimate_ttt:
             self.winner = marker
 
     def draw(self):
-        dummy = tic_tac_toe()
+        dummy = tic_tac_toe(1)
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
         for i in range(3):
             t1 = list(map(dummy.map_to_xo, g1.board[i]))
@@ -80,11 +81,19 @@ class ultimate_ttt:
             print("-----------||-----------||-----------")
     
     def getPossibleActions(self):
-        if last_move == None:
+        if self.last_move == None:
             return [x for x in range(11,100)]
+        elif self.board[self.last_move-1].active:
+            temp = self.board[self.last_move-1].board.flatten()
+            return np.argwhere(temp==0).flatten() + (self.last_move * 10) + 1
         else:
-            temp = np.reshape(self.board[last_move-1],(1,9)).flatten()
-            return np.argwhere(temp==0).flatten()
+            temp = [game for game in self.board if game.active]
+            ans =  []
+            for game in temp:
+                temp = game.board.flatten()
+                temp = np.argwhere(temp==0).flatten() + (game.id * 10) + 1
+                ans.extend(temp)
+            return ans
     
     def isValid(self, move, last_move):
         pos = int(move%10) 
@@ -120,9 +129,4 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-
             player *= -1
-
-game = ultimate_ttt()
-game.play()
-

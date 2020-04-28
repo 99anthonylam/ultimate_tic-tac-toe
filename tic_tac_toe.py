@@ -2,7 +2,8 @@ import numpy as np
 import math
 
 class tic_tac_toe:
-  def __init__(self):
+  def __init__(self, id):
+    self.id = id
     self.board = np.zeros((3,3)).astype(int)
     self.active = True
     self.winner = None

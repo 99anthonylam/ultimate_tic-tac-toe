@@ -20,7 +20,7 @@ class ultimate_ttt:
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
-        self.minmaxAgent = minmax()
+        # self.minmaxAgent = minmax()
 
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
@@ -110,9 +110,11 @@ class ultimate_ttt:
             return (False,"Out of bounds")
         if game < 1 or game > 9:
             return (False, "Out of bounds")
+        if last_move != None and self.board[last_move-1].active == False:
+            return (True, None)
         row = int((pos-1)/3)
         col = (pos-1)%3
-
+        
         if self.board[game-1].active:
             if game != last_move and last_move != None:
                 return (False, "Not in correct game")
@@ -159,11 +161,11 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-            chosenTile = self.minmaxAgent.algorithm(self, player*-1, self.getPossibleActions())
-            pos = int(chosenTile%10) #e.g. 9
-            game = int((chosenTile-pos)/10) #e.g. 3
-            self.board[game-1].place(player*-1, pos)
-            self.draw()
+            # chosenTile = self.minmaxAgent.algorithm(self, player*-1, self.getPossibleActions())
+            # pos = int(chosenTile%10) #e.g. 9
+            # game = int((chosenTile-pos)/10) #e.g. 3
+            # self.board[game-1].place(player*-1, pos)
+            # self.draw()
 
 
             player *= -1
@@ -224,4 +226,5 @@ class ultimate_ttt:
             ans.extend(temp)
         return ans
 
-
+game = ultimate_ttt()
+game.play()

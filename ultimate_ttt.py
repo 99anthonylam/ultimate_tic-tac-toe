@@ -20,7 +20,7 @@ class ultimate_ttt:
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
-        # self.minmaxAgent = minmax()
+        self.minmaxAgent = minmax()
 
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
@@ -114,7 +114,7 @@ class ultimate_ttt:
             return (True, None)
         row = int((pos-1)/3)
         col = (pos-1)%3
-        
+
         if self.board[game-1].active:
             if game != last_move and last_move != None:
                 return (False, "Not in correct game")
@@ -161,14 +161,20 @@ class ultimate_ttt:
             self.draw()
             if self.checkVictory(player):
                 print("Game has been won!")
-            # chosenTile = self.minmaxAgent.algorithm(self, player*-1, self.getPossibleActions())
-            # pos = int(chosenTile%10) #e.g. 9
-            # game = int((chosenTile-pos)/10) #e.g. 3
-            # self.board[game-1].place(player*-1, pos)
-            # self.draw()
 
 
-            player *= -1
+            # comment the following out to remove minMax
+            chosenTile = self.minmaxAgent.algorithm(self, player*-1, self.getPossibleActions())
+            pos = int(chosenTile%10) #e.g. 9
+            game = int((chosenTile-pos)/10) #e.g. 3
+            self.last_move = pos
+            self.board[game-1].place(player*-1, pos)
+            if self.checkVictory(player*-1):
+                print("Game has been won!")
+            self.draw()
+
+
+            # player *= -1
 
     def instantWin(self, currentPlayer, move):
         won = False
@@ -211,9 +217,11 @@ class ultimate_ttt:
                     score += 3
                 elif game-1 == 5:  # if small game is the center game, even more points
                     score += 10
-            self.emptyTile(play)
+            # self.emptyTile(play)
             if play in center_spots:  # just if the spot itself is valuable
                 score += 3
+                if play == 55:
+                    score += 3
         print("Calculated score for moves " + str(positions) + " is " + str(score))
         return score
 
@@ -226,5 +234,4 @@ class ultimate_ttt:
             ans.extend(temp)
         return ans
 
-game = ultimate_ttt()
-game.play()
+

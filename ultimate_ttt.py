@@ -186,6 +186,7 @@ class ultimate_ttt:
         self.checkVictory(currentPlayer)
         self.emptyTile(move)
         if self.active is False:  # reverting changes from the previous checkVictory call
+            print("{} will win with move {}", format(currentPlayer, str(move)))
             won = True
             self.active = True
             self.winner = None
@@ -207,11 +208,14 @@ class ultimate_ttt:
         corner_boards = [1, 3, 7, 9]  # small tic tac toe boards
         score = 0
         positions = self.allTilesbyPlayer(currentPlayer)
+        self.draw()
+        print("Currently looking at player " + str(currentPlayer) + " with positions " + str(positions))
         for play in positions:
             pos = int(play % 10)  # e.g. 9
             game = int((play - pos) / 10)  # e.g. 3
             self.board[game - 1].place(currentPlayer, pos)
             if self.board[game-1].winner == currentPlayer:
+                print("{} would win {} by using tile {}".format(str(currentPlayer), str(game-1), str(play)))
                 score += 5
                 if game-1 in corner_boards:  # if the small game is a corner game, extra points
                     score += 3

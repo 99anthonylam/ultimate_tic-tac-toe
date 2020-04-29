@@ -27,10 +27,10 @@ class minmax():
             deepCopy.draw()
             if deepCopy.instantWin(currentPlayer, tile):
                 return tile
-            elif mustBlock:
-                bestPlay = self.blockLocation
-                break
-            wValue = self.recursive(deepCopy, currentPlayer, currentPlayer*-1, 1, -20000, 20000)
+            # elif mustBlock:
+                # bestPlay = self.blockLocation
+                # break
+            wValue = self.recursive(deepCopy, currentPlayer, currentPlayer*-1, 0, -20000, 20000)
             print("the wValue of putting a tile at " + str(tile) + " is " + str(wValue))
             if wValue == -10000:
                 mustBlock = True
@@ -44,6 +44,8 @@ class minmax():
 
 
     def recursive(self, board, marker, currentPlayer, depth, a, b):
+        print("Drawing as we enter the recursion")
+        board.draw()
         alpha = a
         beta = b
         possibleMoves = board.getPossibleActions()
@@ -107,7 +109,7 @@ class minmax():
                 return beta
         else:  # depth is zero, time for heuristics
             # usedPositions = board.contrastCompare( board)
-            print("positive score: " + str(board.heuristics(marker)) + " negative score: " + str(board.heuristics(marker*-1)))
+            print("positive score: " + str(board.heuristics(marker)) + " negative score from " + str(marker*-1) + ": " + str(board.heuristics(marker*-1)))
             heuristicScore = board.heuristics(marker) - board.heuristics(marker*-1)
             # heuristicScore = board.heuristics(marker)
             return heuristicScore

@@ -2,6 +2,7 @@ import numpy as np
 import random
 import math
 import code
+import copy
 
 class Node:
     def __init__(self):
@@ -44,7 +45,7 @@ class Board:
     
     def getEmptyPositions(self):
         x = self.boardValues.flatten()
-        return (np.reshape(np.argwhere(x==0), (1,9)) + 1)[0]
+        return np.argwhere(x==0).flatten()+1
 
 class State:
     def __init__(self):
@@ -60,7 +61,7 @@ class State:
             row = int((pos-1)/3)
             col = (pos-1)%3
             tempState = State()
-            tempState.board = self.board
+            tempState.board = copy.deepcopy(self.board)
             tempState.playerNo = (3-self.playerNo)
             tempState.board.boardValues[row][col] = self.playerNo
             possibleStates.append(tempState)
@@ -93,7 +94,6 @@ class MCTS:
         rootNode.state.playerNo = opponent
         i = 0
         while (i < 100):
-            print(i)
             promisingNode = selectPromisingNode(rootNode)
             if (promisingNode.state.board.checkStatus() == -1):
                 expandNode(promisingNode, opponent)
@@ -104,10 +104,8 @@ class MCTS:
             backPropogation(nodeToExplore, playoutResult)
             i+=1
         
-        temp = [UCT.getValUCT(parentVisit,x.state.winScore, x.state.visitCount) for x in node.children]
-        return node.children[temp.index(max(temp))]
-
-        winnerNode = max(rootNode.children)
+        temp = [UCT.getValUCT(rootNode.state.visitCount,x.state.winScore, x.state.visitCount) for x in rootNode.children]
+        winnerNode = rootNode.children[temp.index(max(temp))]
 
         tree.root = winnerNode
         return winnerNode.state.board
@@ -136,7 +134,7 @@ def backPropogation(node, playerNo):
     while (tempNode != None):
         tempNode.state.visitCount += 1
         if (tempNode.state.playerNo == playerNo):
-            tempNode.state.winScore + 10
+            tempNode.state.winScore += 10
         tempNode = tempNode.parent
 
 def simulateRandomPlayout(node, opponent):
@@ -148,7 +146,7 @@ def simulateRandomPlayout(node, opponent):
         return boardStatus
     while (boardStatus == True):
         tempState.player = 3-tempState.player
-        tempState.randomPLay()
+        tempState.randomPlay()
         boardStatus = tempState.board.status
     return boardStatus
         
@@ -158,9 +156,9 @@ game = Board()
 player = game.P1
 for i in range(9):
     game = MCTS.findNextMove(game, player)
+    print(game.boardValues)
     if (game.checkStatus() != -1):
+        print(winStatus)
         break
     player = 3-player
     winStatus = game.checkStatus
-    print(game)
-    print(winStatus)

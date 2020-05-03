@@ -110,10 +110,12 @@ class ultimate_ttt:
             return (False,"Out of bounds")
         if game < 1 or game > 9:
             return (False, "Out of bounds")
-        if last_move != None and self.board[last_move-1].active == False:
-            return (True, None)
         row = int((pos-1)/3)
         col = (pos-1)%3
+        if last_move != None and self.board[last_move-1].active == False:
+            if self.board[game-1].board[row][col] != 0:
+                return (False, "Spot is taken")
+            return (True, None)
 
         if self.board[game-1].active:
             if game != last_move and last_move != None:
@@ -184,9 +186,13 @@ class ultimate_ttt:
             return False
         self.board[game - 1].place(currentPlayer, pos)
         self.checkVictory(currentPlayer)
-        self.emptyTile(move)
+
+        # check why the other player is being credited for wins
+
+
+        # self.emptyTile(move)
         if self.active is False:  # reverting changes from the previous checkVictory call
-            print("{} will win with move {}", format(currentPlayer, str(move)))
+            # print("{} will win with move {}", format(currentPlayer, str(move)))
             won = True
             self.active = True
             self.winner = None
@@ -204,28 +210,30 @@ class ultimate_ttt:
 
 
     def heuristics(self, currentPlayer):
+        print("Currently calculating for player " + str(currentPlayer))
+
         center_spots = [51, 52, 53, 54, 55, 56, 57, 58, 59, 15, 25, 35, 45, 65, 75, 85, 95]  # high value tile locations
-        corner_boards = [1, 3, 7, 9]  # small tic tac toe boards
+        corner_boards = [0, 2, 6, 8]  # small tic tac toe boards
         score = 0
         positions = self.allTilesbyPlayer(currentPlayer)
-        self.draw()
         print("Currently looking at player " + str(currentPlayer) + " with positions " + str(positions))
+        for int in range(1,10):  # to iterate through the boards
+            if self.board[int-1].winner == currentPlayer:
+                print("The winner for board {} is {}".format(str(int), str(currentPlayer)))
+                score += 6
+                if int-1 in corner_boards:  # if the small game is a corner game, extra points
+                    score += 4
+                elif int-1 == 4:  # if small game is the center game, even more points
+                    score += 11
+            numberOfDoubles = self.board[int-1].checkDoubles(currentPlayer)
+            print("We found {} doubles in Game {}".format(str(numberOfDoubles), str(int)))
+            score += numberOfDoubles*2
         for play in positions:
-            pos = int(play % 10)  # e.g. 9
-            game = int((play - pos) / 10)  # e.g. 3
-            self.board[game - 1].place(currentPlayer, pos)
-            if self.board[game-1].winner == currentPlayer:
-                print("{} would win {} by using tile {}".format(str(currentPlayer), str(game-1), str(play)))
-                score += 5
-                if game-1 in corner_boards:  # if the small game is a corner game, extra points
-                    score += 3
-                elif game-1 == 5:  # if small game is the center game, even more points
-                    score += 10
-            # self.emptyTile(play)
             if play in center_spots:  # just if the spot itself is valuable
                 score += 3
                 if play == 55:
                     score += 3
+
         print("Calculated score for moves " + str(positions) + " is " + str(score))
         return score
 
@@ -238,4 +246,26 @@ class ultimate_ttt:
             ans.extend(temp)
         return ans
 
+
+    def draw2(self):
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
+        print("-----------||-----------||-----------")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 3, 0, 0, 3, 0, 0, 3, 0))
+        print("-----------||-----------||-----------")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
+        print("-----------||-----------||-----------")
+        print("=====================================")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 3, 3, 3, 0, 0, 0))
+        print("-----------||-----------||-----------")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 3, 0, 3, 6, 3, 0, 3, 0))
+        print("-----------||-----------||-----------")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 3, 3, 3, 0, 0, 0))
+        print("-----------||-----------||-----------")
+        print("=====================================")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
+        print("-----------||-----------||-----------")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 3, 0, 0, 3, 0, 0, 3, 0))
+        print("-----------||-----------||-----------")
+        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
+        print("-----------||-----------||-----------")
 

@@ -7,6 +7,8 @@ from ultimate_ttt import *
 
 if __name__ == "__main__":
     game = ultimate_ttt()
+    # game.draw()
+    # game.draw2()
     game.play()
     # print(len(game.boards))
 

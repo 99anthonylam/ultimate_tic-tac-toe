@@ -56,3 +56,36 @@ class tic_tac_toe:
     row = int((move-1)/3)
     col = (move-1)%3
     self.board[row][col] = 0
+
+  def checkDoubles(self, currentPlayer):
+    numOfDoubles = 0
+    if currentPlayer == 1:
+      for row in self.board:
+        if (sum(row)) == 2:
+          numOfDoubles += 1
+
+      for i in range(0, 3):
+        if (sum(self.board[:, i])) == 2:
+          numOfDoubles += 1
+
+      if (sum(self.board.diagonal())) == 2:
+        numOfDoubles += 1
+
+      if (sum(np.fliplr(self.board).diagonal())) == 2:
+        numOfDoubles += 1
+
+    elif currentPlayer == -1:
+      for row in self.board:
+        if (sum(row)) == -2:
+          numOfDoubles += 1
+
+      for i in range(0, 3):
+        if (sum(self.board[:, i])) == -2:
+          numOfDoubles += 1
+
+      if (sum(self.board.diagonal())) == -2:
+        numOfDoubles += 1
+
+      if (sum(np.fliplr(self.board).diagonal())) == -2:
+        numOfDoubles += 1
+    return numOfDoubles

@@ -30,7 +30,7 @@ class minmax():
             # elif mustBlock:
                 # bestPlay = self.blockLocation
                 # break
-            wValue = self.recursive(deepCopy, currentPlayer, currentPlayer*-1, 0, -20000, 20000)
+            wValue = self.recursive(deepCopy, currentPlayer, currentPlayer*-1, 1, -20000, 20000)
             print("the wValue of putting a tile at " + str(tile) + " is " + str(wValue))
             if wValue == -10000:
                 mustBlock = True
@@ -44,8 +44,6 @@ class minmax():
 
 
     def recursive(self, board, marker, currentPlayer, depth, a, b):
-        print("Drawing as we enter the recursion")
-        board.draw()
         alpha = a
         beta = b
         possibleMoves = board.getPossibleActions()
@@ -57,8 +55,9 @@ class minmax():
                 score = -10000  # substitute for INTEGER.MIN_VALUE
                 if score != 10000:
                     for i in possibleMoves:
-                        print("The current MAX considered index is " + str(i))
+                        print("Considering I use tile " + str(i))
                         if board.instantWin(currentPlayer, i):
+                            print("Detecting a friendly instant win")
                             alpha = 10000
                             score = alpha
                             return score
@@ -67,7 +66,7 @@ class minmax():
                             game = int((i - pos) / 10)
                             board.last_move = pos
                             board.board[game - 1].place(currentPlayer, pos)
-                            print("how can we play off this?")
+                            print("we try to put down tile " + str(i))
                             board.draw()
                             score = max(score, self.recursive(board, marker, currentPlayer*-1, depth-1, alpha, beta))
                             if (score > alpha):
@@ -83,7 +82,7 @@ class minmax():
                 if score != -10000:
                     for i in possibleMoves:
                         # print(possibleMoves)
-                        print("The current MIN considered index is " + str(i))
+                        print("Considering the enemy uses tile " + str(i))
                         if board.instantWin(currentPlayer, i):
                             beta = -10000
                             score = beta
@@ -102,8 +101,8 @@ class minmax():
                             if (score < beta):
                                 beta = score
                             board.emptyTile(i)
-                            print("What it looks like after emptying a tile")
-                            board.draw()
+                            # print("What it looks like after emptying a tile")
+                            # board.draw()
                         if beta <= alpha:
                             break
                 return beta

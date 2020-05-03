@@ -18,23 +18,24 @@ class Board:
     def __init__(self):
         self.boardValues =  np.zeros((3,3)).astype(int)
         self.IN_PROGRESS = -1
-        self.DRAW = 0
-        self.P1 =1
-        self.p2 =2 
     
-    def checkStatus(self):
+    def checkVictory(self):
+        #Returns marker that won or -1 for active game
+
+        #Horizontal
         for row in self.boardValues:
             if row[0]==row[1]==row[2]!=0:
                 return row[0]
         
+        #Column
         for i in range(0,3):
             col = self.boardValues[:,i]
             if col[0]==col[1]==col[2]!=0:
                 return col[0]
 
+        #Diagonals
         if self.boardValues[0][0]==self.boardValues[2][2]==self.boardValues[1][1]!=0:
             return self.boardValues[0][0]
-    
         if self.boardValues[0][2]==self.boardValues[2][0]==self.boardValues[1][1]!=0:
             return self.boardValues[0][2]
         
@@ -62,7 +63,7 @@ class State:
             col = (pos-1)%3
             tempState = State()
             tempState.board = copy.deepcopy(self.board)
-            tempState.playerNo = (3-self.playerNo)
+            tempState.playerNo = self.playerNo * -1
             tempState.board.boardValues[row][col] = self.playerNo
             possibleStates.append(tempState)
         return possibleStates
@@ -71,15 +72,6 @@ class State:
         action = random.choice(getAllPossibleStates(self))
         self.board[action-1] = 1
 
-def expandNode(node, opponent):
-    possibleStates = node.state.getAllPossibleStates()
-    for state in possibleStates:
-        newNode = Node()
-        newNode.state = state
-        newNode.parent = node
-        newNode.state.playerNo = opponent
-        node.children.append(newNode)
-
 class MCTS:
     def __init__(self):
         self.WIN_SCORE = 10
@@ -87,15 +79,15 @@ class MCTS:
         self.opponent = None
     
     def findNextMove(board, playerNo):
-        opponent = 3-playerNo
+        opponent = playerNo * -1
         tree = Tree()
         rootNode = tree.root
         rootNode.state.board = board
         rootNode.state.playerNo = opponent
         i = 0
-        while (i < 100):
+        while (i < 500):
             promisingNode = selectPromisingNode(rootNode)
-            if (promisingNode.state.board.checkStatus() == -1):
+            if (promisingNode.state.board.checkVictory() == -1):
                 expandNode(promisingNode, opponent)
             nodeToExplore = promisingNode
             if (len(promisingNode.children) >0):
@@ -110,13 +102,6 @@ class MCTS:
         tree.root = winnerNode
         return winnerNode.state.board
 
-def selectPromisingNode(root):
-    test_node = root
-    while (len(test_node.children) != 0) :
-        test_node = UCT.findBest(test_node)
-    return test_node
-
-
 class UCT:
     def getValUCT(total_visits, win_score, visit):
         if (visit == 0):
@@ -129,6 +114,21 @@ class UCT:
         temp = [UCT.getValUCT(parentVisit,x.state.winScore, x.state.visitCount) for x in node.children]
         return node.children[temp.index(max(temp))]
 
+def expandNode(node, opponent):
+    possibleStates = node.state.getAllPossibleStates()
+    for state in possibleStates:
+        newNode = Node()
+        newNode.state = state
+        newNode.parent = node
+        newNode.state.playerNo = opponent
+        node.children.append(newNode)
+
+def selectPromisingNode(root):
+    test_node = root
+    while (len(test_node.children) != 0) :
+        test_node = UCT.findBest(test_node)
+    return test_node
+
 def backPropogation(node, playerNo):
     tempNode = node
     while (tempNode != None):
@@ -140,25 +140,23 @@ def backPropogation(node, playerNo):
 def simulateRandomPlayout(node, opponent):
     tempNode = node
     tempState = tempNode.state
-    boardStatus = tempState.board.checkStatus
+    boardStatus = tempState.board.checkVictory
     if (boardStatus == opponent):
         tempNode.parent.state.winScore = 0
         return boardStatus
     while (boardStatus == True):
-        tempState.player = 3-tempState.player
+        tempState.player = tempState.player * -1
         tempState.randomPlay()
-        boardStatus = tempState.board.status
+        boardStatus = tempState.board.checkVictory
     return boardStatus
         
 # Sim play
-
 game = Board()
-player = game.P1
+player = 1
 for i in range(9):
     game = MCTS.findNextMove(game, player)
     print(game.boardValues)
-    if (game.checkStatus() != -1):
-        print(winStatus)
+    if (game.checkVictory() != -1):
         break
-    player = 3-player
-    winStatus = game.checkStatus
+    player *= -1
+    winStatus = game.checkVictory

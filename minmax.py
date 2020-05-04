@@ -11,7 +11,7 @@ class minmax():
         self.depth = depth
         self.blockLocation = None
 
-    def algorithm(self, board, currentPlayer, positions):
+    def algorithm(self, board, marker, positions):
         mustBlock = False
         bestScore = -10001
         bestPlay = None
@@ -23,17 +23,13 @@ class minmax():
             game = int((tile - pos) / 10)  # e.g. 3
             deepCopy.last_move = pos
             print("What if we played here at {}? haha just kidding unless?".format(tile))
-            deepCopy.board[game - 1].place(currentPlayer, pos)
-            deepCopy.draw()
-            if deepCopy.instantWin(currentPlayer, tile):
+            deepCopy.board[game - 1].place(marker, pos)
+            if deepCopy.instantWin(marker):
+                print("detecting instant win potential")
                 return tile
-            # elif mustBlock:
-                # bestPlay = self.blockLocation
-                # break
-            wValue = self.recursive(deepCopy, currentPlayer, currentPlayer*-1, 1, -20000, 20000)
+            deepCopy.draw()
+            wValue = self.recursive(deepCopy, marker, marker*-1, 1, -20000, 20000)
             print("the wValue of putting a tile at " + str(tile) + " is " + str(wValue))
-            if wValue == -10000:
-                mustBlock = True
             if wValue >= bestScore:
                 print("********************************")
                 print("Tile " + str(tile) + " offers " + str(wValue))
@@ -56,23 +52,22 @@ class minmax():
                 if score != 10000:
                     for i in possibleMoves:
                         print("Considering I use tile " + str(i))
-                        if board.instantWin(currentPlayer, i):
+                        pos = int(i % 10)  #try out the move
+                        game = int((i - pos) / 10)
+                        board.last_move = pos
+                        board.board[game - 1].place(currentPlayer, pos)
+                        print("we try to put down tile " + str(i))
+                        board.draw()
+                        if board.instantWin(currentPlayer):
                             print("Detecting a friendly instant win")
                             alpha = 10000
                             score = alpha
                             return score
-                        else:
-                            pos = int(i % 10)  #try out the move
-                            game = int((i - pos) / 10)
-                            board.last_move = pos
-                            board.board[game - 1].place(currentPlayer, pos)
-                            print("we try to put down tile " + str(i))
-                            board.draw()
-                            score = max(score, self.recursive(board, marker, currentPlayer*-1, depth-1, alpha, beta))
-                            if (score > alpha):
-                                alpha = score
-                            board.emptyTile(i)
-                        if (alpha >= beta):
+                        score = max(score, self.recursive(board, marker, currentPlayer*-1, depth-1, alpha, beta))
+                        if (score > alpha):
+                            alpha = score
+                        board.emptyTile(i)
+                        if (alpha > beta):
                             print("we're gonna break because {} is bigger than {}".format(alpha, beta))
                             break
                 return alpha
@@ -83,27 +78,24 @@ class minmax():
                     for i in possibleMoves:
                         # print(possibleMoves)
                         print("Considering the enemy uses tile " + str(i))
-                        if board.instantWin(currentPlayer, i):
+                        pos = int(i % 10)  #try out the move
+                        game = int((i - pos) / 10)
+                        board.last_move = pos
+                        board.board[game - 1].place(currentPlayer, pos)
+                        print("so we're gonna try putting down the opponent's marker at tile {}".format(i))
+                        board.draw()
+                        if board.instantWin(currentPlayer):
                             beta = -10000
                             score = beta
-                            self.blockLocation = i
                             print("we have a code blue threat at position {}".format(i))
                             return score
-                        else:
-                            pos = int(i % 10)  #try out the move
-                            game = int((i - pos) / 10)
-                            board.last_move = pos
-                            board.board[game - 1].place(currentPlayer, pos)
-                            print("so we're gonna try putting down the opponent's marker at tile {}".format(i))
-                            board.draw()
-
-                            score = min(score, self.recursive(board, marker, currentPlayer*-1, depth-1, alpha, beta))
-                            if (score < beta):
-                                beta = score
-                            board.emptyTile(i)
-                            # print("What it looks like after emptying a tile")
-                            # board.draw()
-                        if beta <= alpha:
+                        score = min(score, self.recursive(board, marker, currentPlayer*-1, depth-1, alpha, beta))
+                        if (score < beta):
+                            beta = score
+                        board.emptyTile(i)
+                        # print("What it looks like after emptying a tile")
+                        # board.draw()
+                        if beta < alpha:
                             break
                 return beta
         else:  # depth is zero, time for heuristics

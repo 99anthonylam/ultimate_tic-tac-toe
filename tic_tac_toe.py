@@ -16,27 +16,42 @@ class tic_tac_toe:
     elif val == -1:
       return 'O'
   
-  def checkVictory(self, marker):
+  def checkVictory(self):
     def updateWinner(self,marker):
+      print("updating winner to be {}".format(marker))
       self.active = False
       self.winner = marker
-
-    for row in self.board:
-      if abs(sum(row)) == 3:
-        updateWinner(self, marker)
+    self.active = True
+    self.winner = None
+    for row in self.board:  # markers: 1 -> X, -1 -> O
+      if (sum(row)) == 3:
+        updateWinner(self, 1)
+      elif sum(row) == -3:
+        updateWinner(self, -1)
     
     for i in range(0,3):
-      if abs(sum(self.board[:,i])) == 3:
-        updateWinner(self, marker)
+      if (sum(self.board[:,i])) == 3:
+        updateWinner(self, 1)
+      elif (sum(self.board[:,i])) == -3:
+        updateWinner(self, -1)
 
-    if abs(sum(self.board.diagonal())) == 3:
-      updateWinner(self, marker)
+    if (sum(self.board.diagonal())) == 3:
+      updateWinner(self, 1)
+    elif(sum(self.board.diagonal())) == -3:
+      updateWinner(self, -1)
   
-    if abs(sum(np.fliplr(self.board).diagonal())) == 3:
-      updateWinner(self, marker)
-    
+    if (sum(np.fliplr(self.board).diagonal())) == 3:
+      updateWinner(self, 1)
+    elif (sum(np.fliplr(self.board).diagonal())) == -3:
+      updateWinner(self, -1)
+
     if not np.any(self.board==0):
       self.active = False
+
+
+
+
+
 
   def draw(self):
     for i, row in enumerate(self.board):
@@ -50,7 +65,7 @@ class tic_tac_toe:
     row = int((move-1)/3)
     col = (move-1)%3
     self.board[row][col] = marker
-    self.checkVictory(marker)
+    self.checkVictory()
 
   def empty(self, move):
     row = int((move-1)/3)

@@ -178,25 +178,10 @@ class ultimate_ttt:
 
             # player *= -1
 
-    def instantWin(self, currentPlayer, move):
-        won = False
-        pos = int(move % 10)  # e.g. 9
-        game = int((move - pos) / 10)  # e.g. 3
-        if self.board[game - 1].active is False:  # small field is already won so don't bother
-            return False
-        self.board[game - 1].place(currentPlayer, pos)
+    def instantWin(self, currentPlayer):
         self.checkVictory(currentPlayer)
-
-        # check why the other player is being credited for wins
-
-
-        # self.emptyTile(move)
-        if self.active is False:  # reverting changes from the previous checkVictory call
-            # print("{} will win with move {}", format(currentPlayer, str(move)))
-            won = True
-            self.active = True
-            self.winner = None
-        return won
+        print("The board is {}".format(str(not self.active)) )
+        return not self.active
 
     def contrastCompare(self, old, new):
         oldTiles = old.getPossibleActions()
@@ -218,15 +203,16 @@ class ultimate_ttt:
         positions = self.allTilesbyPlayer(currentPlayer)
         print("Currently looking at player " + str(currentPlayer) + " with positions " + str(positions))
         for int in range(1,10):  # to iterate through the boards
+            self.board[int-1].checkVictory()
             if self.board[int-1].winner == currentPlayer:
                 print("The winner for board {} is {}".format(str(int), str(currentPlayer)))
-                score += 6
+                score += 20
                 if int-1 in corner_boards:  # if the small game is a corner game, extra points
                     score += 4
                 elif int-1 == 4:  # if small game is the center game, even more points
                     score += 11
             numberOfDoubles = self.board[int-1].checkDoubles(currentPlayer)
-            print("We found {} doubles in Game {}".format(str(numberOfDoubles), str(int)))
+            # print("We found {} doubles in Game {}".format(str(numberOfDoubles), str(int)))
             score += numberOfDoubles*2
         for play in positions:
             if play in center_spots:  # just if the spot itself is valuable

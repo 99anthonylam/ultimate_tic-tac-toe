@@ -18,7 +18,6 @@ class tic_tac_toe:
   
   def checkVictory(self):
     def updateWinner(self,marker):
-      print("updating winner to be {}".format(marker))
       self.active = False
       self.winner = marker
     self.active = True

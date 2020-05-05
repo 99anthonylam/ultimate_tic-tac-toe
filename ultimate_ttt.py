@@ -20,37 +20,42 @@ class ultimate_ttt:
         self.players = [player() for x in range(2)]
         self.players[0].configureMarker(1)
         self.players[1].configureMarker(2)
-        self.minmaxAgent = minmax()
+        self.minmaxAgent = None
+        self.minmaxAgent2 = None
 
     def checkVictory(self, marker):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
         # Check Rows
-        if (None != g1.winner == g2.winner == g3.winner):
+        if (marker == g1.winner == g2.winner == g3.winner):
             self.active = False
             self.winner = marker
-        elif (None != g4.winner == g5.winner == g6.winner):
+        elif (marker == g4.winner == g5.winner == g6.winner):
             self.active = False
             self.winner = marker
-        elif (None != g7.winner == g8.winner == g9.winner):
+        elif (marker == g7.winner == g8.winner == g9.winner):
             self.active = False
             self.winner = marker
         # Check Columns
-        elif (None != g1.winner == g4.winner == g7.winner):
+        elif (marker == g1.winner == g4.winner == g7.winner):
             self.active = False
             self.winner = marker
-        elif (None != g2.winner == g5.winner == g8.winner):
+        elif (marker == g2.winner == g5.winner == g8.winner):
             self.active = False
             self.winner = marker
-        elif (None != g3.winner == g6.winner == g9.winner):
+        elif (marker == g3.winner == g6.winner == g9.winner):
             self.active = False
             self.winner = marker
         # Check Diagonals
-        elif (None != g1.winner == g5.winner == g9.winner):
+        elif (marker == g1.winner == g5.winner == g9.winner):
             self.active = False
             self.winner = marker
-        elif (None != g3.winner == g5.winner == g7.winner):
+        elif (marker == g3.winner == g5.winner == g7.winner):
             self.active = False
             self.winner = marker
+
+        elif self.getPossibleActions() == []:
+            # print("No moves left!")
+            self.active = False
 
     def draw(self):
         dummy = tic_tac_toe(1)
@@ -90,7 +95,7 @@ class ultimate_ttt:
             return np.argwhere(temp==0).flatten() + (self.last_move * 10) + 1
         else:
             temp = [game for game in self.board if game.active]
-            ans =  []
+            ans = []
             for game in temp:
                 temp = game.board.flatten()
                 temp = np.argwhere(temp==0).flatten() + (game.id * 10) + 1
@@ -180,13 +185,14 @@ class ultimate_ttt:
 
     def instantWin(self, currentPlayer):
         self.checkVictory(currentPlayer)
-        print("The board is {}".format(str(not self.active)) )
-        return not self.active
+        # print("We are currently looking for player {} and we think that the winner is {}".format(str(currentPlayer),str(self.winner)))
+        # print("The board is {}".format(str(not self.active)) )
+        return self.winner == currentPlayer
 
     def contrastCompare(self, old, new):
         oldTiles = old.getPossibleActions()
         newTiles = new.getPossibleActions()
-        print("we are comparing " + (str(oldTiles)) + " and " + str(newTiles))
+        # print("we are comparing " + (str(oldTiles)) + " and " + str(newTiles))
         output = []
         for tile in newTiles:
             if tile not in oldTiles:
@@ -195,18 +201,18 @@ class ultimate_ttt:
 
 
     def heuristics(self, currentPlayer):
-        print("Currently calculating for player " + str(currentPlayer))
+        # print("Currently calculating for player " + str(currentPlayer))
 
         center_spots = [51, 52, 53, 54, 55, 56, 57, 58, 59, 15, 25, 35, 45, 65, 75, 85, 95]  # high value tile locations
         corner_boards = [0, 2, 6, 8]  # small tic tac toe boards
         score = 0
         positions = self.allTilesbyPlayer(currentPlayer)
-        print("Currently looking at player " + str(currentPlayer) + " with positions " + str(positions))
+        # print("Currently looking at player " + str(currentPlayer) + " with positions " + str(positions))
         for int in range(1,10):  # to iterate through the boards
             self.board[int-1].checkVictory()
             if self.board[int-1].winner == currentPlayer:
-                print("The winner for board {} is {}".format(str(int), str(currentPlayer)))
-                score += 20
+                # print("The winner for board {} is {}".format(str(int), str(currentPlayer)))
+                score += 10
                 if int-1 in corner_boards:  # if the small game is a corner game, extra points
                     score += 4
                 elif int-1 == 4:  # if small game is the center game, even more points
@@ -220,7 +226,7 @@ class ultimate_ttt:
                 if play == 55:
                     score += 3
 
-        print("Calculated score for moves " + str(positions) + " is " + str(score))
+        # print("Calculated score for moves " + str(positions) + " is " + str(score))
         return score
 
     def allTilesbyPlayer(self, player):
@@ -231,6 +237,170 @@ class ultimate_ttt:
             temp = np.argwhere(temp == player).flatten() + (game.id * 10) + 1
             ans.extend(temp)
         return ans
+
+    def twoHumanPlay(self):
+        player = 1
+        while (self.active):
+            print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self, player)))
+            while True:
+                try:
+                    move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+                    break
+                except (ValueError):
+                    print("Please input a valid int")
+
+            while (self.isValid(move, self.last_move)[0] == False):
+                print("Your move is not valid - {}".format(self.isValid(move, self.last_move)[1]))
+                move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+            pos = int(move % 10)  # e.g. 9
+            game = int((move - pos) / 10)  # e.g. 3
+            self.last_move = pos
+            self.board[game - 1].place(player, pos)
+            self.draw()
+            self.checkVictory(player)
+            if self.winner == player:
+                print("Game has been won by player {}!".format(player))
+            elif self.active == False:
+                print("No one won!")
+        player *= -1
+
+    def oneHumanPlay(self):
+        print("Type 1 to go first, 2 to go second.")
+        while True:
+            try:
+                choice = int(input("Enter your decision: "))
+                if choice in [1, 2]:
+                    break
+            except (ValueError):
+                print("Please input a valid int")
+
+        if choice == 1:  # human go first
+            player = 1
+            while (self.active):
+                print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self, player)))
+                while True:
+                    try:
+                        move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+                        break
+                    except (ValueError):
+                        print("Please input a valid int")
+
+                while (self.isValid(move, self.last_move)[0] == False):
+                    print("Your move is not valid - {}".format(self.isValid(move, self.last_move)[1]))
+                    move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+                pos = int(move % 10)  # e.g. 9
+                game = int((move - pos) / 10)  # e.g. 3
+                self.last_move = pos
+                self.board[game - 1].place(player, pos)
+                self.draw()
+                self.checkVictory(player)
+                if self.winner == player:
+                    print("Game has been won by the player!")
+                elif self.active == False:
+                    print("No one won!")
+
+                # comment the following out to remove minMax
+                chosenTile = self.minmaxAgent.algorithm(self, player * -1, self.getPossibleActions())
+                pos = int(chosenTile % 10)  # e.g. 9
+                game = int((chosenTile - pos) / 10)  # e.g. 3
+                self.last_move = pos
+                self.board[game - 1].place(player * -1, pos)
+                self.checkVictory(player * -1)
+                if self.winner == (player * -1):
+                    print("Game has been won by the AI!")
+                elif self.active == False:
+                    print("No one won!")
+                self.draw()
+
+        else:  # AI go first
+            player = -1
+            while (self.active):
+                chosenTile = self.minmaxAgent.algorithm(self, player * -1, self.getPossibleActions())
+                pos = int(chosenTile % 10)  # e.g. 9
+                game = int((chosenTile - pos) / 10)  # e.g. 3
+                self.last_move = pos
+                self.board[game - 1].place(player * -1, pos)
+                self.checkVictory(player * -1)
+                if self.winner == (player * -1):
+                    print("Game has been won by the AI!")
+                elif self.active == False:
+                    print("No one won!")
+                self.draw()
+
+
+                print("Player {}, your marker is {}".format(player, tic_tac_toe.map_to_xo(self, player)))
+                while True:
+                    try:
+                        move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+                        break
+                    except (ValueError):
+                        print("Please input a valid int")
+
+                while (self.isValid(move, self.last_move)[0] == False):
+                    print("Your move is not valid - {}".format(self.isValid(move, self.last_move)[1]))
+                    move = int(input("Enter your move {}: ".format(self.nextMoveHelper())))
+                pos = int(move % 10)  # e.g. 9
+                game = int((move - pos) / 10)  # e.g. 3
+                self.last_move = pos
+                self.board[game - 1].place(player, pos)
+                self.draw()
+                self.checkVictory(player)
+                if self.winner == player:
+                    print("Game has been won by the player!")
+                    break
+                elif self.active == False:
+                    print("No one won!")
+                    break
+
+    def twoAIPlay(self):
+        player = 1
+        chosenTile = random.choice(self.getPossibleActions())  # start off with one random choice from both sides 
+        pos = int(chosenTile % 10)  # e.g. 9
+        game = int((chosenTile - pos) / 10)  # e.g. 3
+        self.last_move = pos
+        self.board[game - 1].place(player, pos)
+
+        chosenTile = random.choice(self.getPossibleActions())
+        pos = int(chosenTile % 10)  # e.g. 9
+        game = int((chosenTile - pos) / 10)  # e.g. 3
+        self.last_move = pos
+        self.board[game - 1].place(player * -1, pos)
+
+        while (self.active):
+            chosenTile = self.minmaxAgent.algorithm(self, player, self.getPossibleActions())
+            pos = int(chosenTile % 10)  # e.g. 9
+            game = int((chosenTile - pos) / 10)  # e.g. 3
+            self.last_move = pos
+            self.board[game - 1].place(player, pos)
+            self.checkVictory(player)
+            if self.winner == player:
+                self.draw()
+                print("Game has been won by the first AI!")
+                break
+            elif self.active == False:
+                self.draw()
+                print("No one won!")
+                break
+            # self.draw()
+
+            chosenTile = self.minmaxAgent2.algorithm(self, player * -1, self.getPossibleActions())
+            # print(str(chosenTile))
+            pos = int(chosenTile % 10)  # e.g. 9
+            game = int((chosenTile - pos) / 10)  # e.g. 3
+            self.last_move = pos
+            self.board[game - 1].place(player * -1, pos)
+            self.checkVictory(player * -1)
+            if self.winner == (player * -1):
+                self.draw()
+                print("Game has been won by the second AI!")
+                break
+            elif self.active == False:
+                self.draw()
+                print("No one won!")
+                break
+            # self.draw()
+
+
 
 
     def draw2(self):
@@ -254,4 +424,61 @@ class ultimate_ttt:
         print("-----------||-----------||-----------")
         print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
         print("-----------||-----------||-----------")
+
+    def setupGame(self):
+        choice = None
+        difficulty = None
+        print("How many players?")
+        print("1: Two Human Players")
+        print("2: One Human, One AI")
+        print("3: Two AI Players")
+        while True:  # choosing player types
+            try:
+                choice = int(input("Enter your choice: "))
+                if choice in [1, 2, 3]:
+                    break
+                else:
+                    print("Invalid choice.")
+            except (ValueError):
+                print("Please input a valid int")
+
+        if choice == 2:  #one AI
+            print("What difficulty would you like? Please choose a difficulty setting from 1-3. Three is the most difficult.")
+            while True:
+                try:
+                    difficulty = int(input("Enter your choice: "))
+                    if difficulty in [1, 2, 3]:
+                        difficulty -= 1  # converts into depth setting
+                        self.minmaxAgent = minmax(difficulty)
+                        break
+                    else:
+                        print("Invalid choice.")
+                except (ValueError):
+                    print("Please input a valid int")
+
+        elif choice == 3:  # two AI
+            print("What difficulty would you like? Please type a two-digit number with 1-3 in the tens and ones place. For example, 33 will have the two hardest setting AI playing eachother.")
+            while True:  # choosing player types
+                try:
+                    difficulty = int(input("Enter your choice: "))
+                    if difficulty in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
+                        self.minmaxAgent = minmax((difficulty // 10) - 1)  # converts the tens place digit to a depth setting
+                        self.minmaxAgent2 = minmax((difficulty % 10)  - 1)  # converts the ones place digit to a depth setting
+                        break
+                    else:
+                        print("Invalid choice. Please choose one of " + str([11, 12, 13, 21, 22, 23, 31, 32, 33]))
+                except (ValueError):
+                    print("Please input a valid int")
+        return (choice)
+
+    def quickStart1(self):
+        self.minmaxAgent = minmax(2)
+        self.minmaxAgent2 = minmax(2)
+        self.twoAIPlay()
+
+    def quickStart2(self):
+        self.minmaxAgent = minmax(1)
+        self.minmaxAgent2 = minmax(2)
+        self.twoAIPlay()
+
 

@@ -92,7 +92,7 @@ class UTTT:
         col = (pos-1)%3
 
         # Last game was won
-        if self.last_move != None and not self.board[self.last_move%10-1].active:
+        if self.last_move != None and not self.board[self.last_move%10-1].active and game != self.last_move//10:
             return (True, None)
 
         if self.board[game-1].active:
@@ -103,29 +103,3 @@ class UTTT:
         else:
             return (False, "Game has been won")
         return (True,None)
-
-    # def play(self):
-       
-# Game = UTTT()
-# print("Initializing game against MCTS agent")
-# print("Flipping a coin!")
-# if (random.randint(1,2) == 1):
-#     player = 1
-#     print("Heads!, you play first")
-# else:
-#     print("Tails :(, the agent will play first")
-#     player = -1
-#     Game = agent.findNextMove(Game, player)
-#     Game.draw()
-# while (Game.status == 2):
-#     print("Player {}, your marker is {}".format(player, Game.board[0].map_to_xo(player)))
-#     move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
-#     while (Game.isValid(move)[0] == False):
-#         print("Your move is not valid - {}".format(Game.isValid(move, last_move)[1]))
-#         move = int(input("Enter your move (e.g. 39 for the bottom right corner of game 3): "))
-#     pos = int(move%10) #e.g. 9
-#     game = int((move-pos)/10) #e.g. 3
-#     last_move = pos
-#     Game.board[game-1].place(player, pos)
-#     Game.draw()
-# print("Game has been won by marker {}".format(Game.checkVictory))

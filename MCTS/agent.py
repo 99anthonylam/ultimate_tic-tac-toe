@@ -42,7 +42,6 @@ def findNextMove(board, player):
                     return (winScore/visit) + (1.41 * math.sqrt((math.log(totalVisits)/ visit)))
             
             temp = [getUCTVal(node.state.visitCount, x.state.winScore, x.state.visitCount) for x in node.children]
-            print(temp)
             return node.children[temp.index(max(temp))]
 
         temp_node = root
@@ -87,7 +86,8 @@ def findNextMove(board, player):
     rootNode.state.game = board
     rootNode.state.player = opponent
     i = 0
-    while (i < 50):
+    while (i < 100):
+        print(i)
         # Select phase
         promisingNode = selectPromisingNode(rootNode)
         # Expand phase for active game
@@ -106,7 +106,6 @@ def findNextMove(board, player):
         i+=1
     
     temp = [UCT.getValUCT(rootNode.state.visitCount, x.state.winScore, x.state.visitCount) for x in rootNode.children]
-    print(temp)
     winnerNode = rootNode.children[temp.index(max(temp))]
 
     tree.root = winnerNode

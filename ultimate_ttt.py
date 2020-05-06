@@ -23,7 +23,7 @@ class ultimate_ttt:
         self.minmaxAgent = None
         self.minmaxAgent2 = None
 
-    def checkVictory(self, marker):
+    def checkVictory(self, marker):  # checks if the game has ended
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
         # Check Rows
         if (marker == g1.winner == g2.winner == g3.winner):
@@ -57,7 +57,7 @@ class ultimate_ttt:
             # print("No moves left!")
             self.active = False
 
-    def draw(self):
+    def draw(self):  # prints out board in console
         dummy = tic_tac_toe(1)
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
         for i in range(3):
@@ -87,7 +87,7 @@ class ultimate_ttt:
                 break
             print("-----------||-----------||-----------")
     
-    def getPossibleActions(self):
+    def getPossibleActions(self):  # self-explanatory, returns an array of possible tiles to play
         if self.last_move == None:
             return [x for x in range(11,100)]
         elif self.board[self.last_move-1].active:
@@ -102,7 +102,7 @@ class ultimate_ttt:
                 ans.extend(temp)
             return ans
 
-    def emptyTile(self, move):
+    def emptyTile(self, move):  # called to remove a marker from a tile during minmax lookahead iterations
         pos = int(move % 10)  # e.g. 9
         game = int((move - pos) / 10)  # e.g. 3
         self.board[game - 1].empty(pos)
@@ -189,20 +189,7 @@ class ultimate_ttt:
         # print("The board is {}".format(str(not self.active)) )
         return self.winner == currentPlayer
 
-    def contrastCompare(self, old, new):
-        oldTiles = old.getPossibleActions()
-        newTiles = new.getPossibleActions()
-        # print("we are comparing " + (str(oldTiles)) + " and " + str(newTiles))
-        output = []
-        for tile in newTiles:
-            if tile not in oldTiles:
-                output.add(tile)
-        return output
-
-
     def heuristics(self, currentPlayer):
-        # print("Currently calculating for player " + str(currentPlayer))
-
         center_spots = [51, 52, 53, 54, 55, 56, 57, 58, 59, 15, 25, 35, 45, 65, 75, 85, 95]  # high value tile locations
         corner_boards = [0, 2, 6, 8]  # small tic tac toe boards
         score = 0
@@ -211,14 +198,12 @@ class ultimate_ttt:
         for int in range(1,10):  # to iterate through the boards
             self.board[int-1].checkVictory()
             if self.board[int-1].winner == currentPlayer:
-                # print("The winner for board {} is {}".format(str(int), str(currentPlayer)))
-                score += 10
+                score += 10  # points for winning a small board
                 if int-1 in corner_boards:  # if the small game is a corner game, extra points
                     score += 4
                 elif int-1 == 4:  # if small game is the center game, even more points
                     score += 11
-            numberOfDoubles = self.board[int-1].checkDoubles(currentPlayer)
-            # print("We found {} doubles in Game {}".format(str(numberOfDoubles), str(int)))
+            numberOfDoubles = self.board[int-1].checkDoubles(currentPlayer)  # points for having two out of three tiles for a small board win
             score += numberOfDoubles*2
         for play in positions:
             if play in center_spots:  # just if the spot itself is valuable
@@ -226,7 +211,6 @@ class ultimate_ttt:
                 if play == 55:
                     score += 3
 
-        # print("Calculated score for moves " + str(positions) + " is " + str(score))
         return score
 
     def allTilesbyPlayer(self, player):
@@ -354,7 +338,7 @@ class ultimate_ttt:
 
     def twoAIPlay(self):
         player = 1
-        chosenTile = random.choice(self.getPossibleActions())  # start off with one random choice from both sides 
+        chosenTile = random.choice(self.getPossibleActions())  # start off with one random choice from both sides
         pos = int(chosenTile % 10)  # e.g. 9
         game = int((chosenTile - pos) / 10)  # e.g. 3
         self.last_move = pos
@@ -400,32 +384,7 @@ class ultimate_ttt:
                 break
             # self.draw()
 
-
-
-
-    def draw2(self):
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
-        print("-----------||-----------||-----------")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 3, 0, 0, 3, 0, 0, 3, 0))
-        print("-----------||-----------||-----------")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
-        print("-----------||-----------||-----------")
-        print("=====================================")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 3, 3, 3, 0, 0, 0))
-        print("-----------||-----------||-----------")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 3, 0, 3, 6, 3, 0, 3, 0))
-        print("-----------||-----------||-----------")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 3, 3, 3, 0, 0, 0))
-        print("-----------||-----------||-----------")
-        print("=====================================")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
-        print("-----------||-----------||-----------")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 3, 0, 0, 3, 0, 0, 3, 0))
-        print("-----------||-----------||-----------")
-        print(" {} | {} | {} || {} | {} | {} || {} | {} | {} ".format(0, 0, 0, 0, 0, 0, 0, 0, 0))
-        print("-----------||-----------||-----------")
-
-    def setupGame(self):
+    def setupGame(self):  # called at beginning of main.py for configuration
         choice = None
         difficulty = None
         print("How many players?")

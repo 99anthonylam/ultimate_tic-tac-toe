@@ -84,7 +84,7 @@ def findNextMove(board, player):
     rootNode.state.player = opponent
     i = 0
     # Change < than conditional in line 87 to dictate number of iterations.
-    while (i < 1000):
+    while (i < 100):
         # Select phase
         promisingNode = selectPromisingNode(rootNode)
         # Expand phase for active game

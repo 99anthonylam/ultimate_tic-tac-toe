@@ -43,7 +43,6 @@ if (choice == 1):
             player *= -1
 
         Game.draw()
-        print("@!$@!#$@!#$@!#$@!#$!@#$!@#$@!#$@!#$@!")
 
     print("Game has been won by marker {}".format(tic_tac_toe.tic_tac_toe.map_to_xo(tic_tac_toe.tic_tac_toe,Game.checkVictory())))
 

@@ -15,7 +15,6 @@ class Tree:
     def __init__(self):
         self.root = Node()
 
-
 class UCT:
     def getValUCT(total_visits, win_score, visit):
         if (visit == 0):
@@ -27,8 +26,6 @@ class UCT:
         parentVisit = node.state.visitCount
         temp = [UCT.getValUCT(parentVisit, x.state.winScore, x.state.visitCount) for x in node.children]
         return node.children[temp.index(max(temp))]
-
-# Helper methods
 
 # MCTS on current game (class UTTT) and for player's turn
 def findNextMove(board, player):
@@ -65,7 +62,7 @@ def findNextMove(board, player):
         tempState = tempNode.state
         tempStatus = tempState.game.checkVictory
         if (tempStatus == opponent):
-            tempNode.parent.state.winScore = -9999
+            tempNode.parent.state.winScore = -1000 #Change to update weight of losing
             return tempStatus
         while (tempStatus == 2):
             tempState.player *= -1
@@ -77,7 +74,7 @@ def findNextMove(board, player):
         while (node != None):
             node.state.visitCount += 1
             if (node.state.player == player):
-                node.state.winScore += 10000
+                node.state.winScore += 100000 #Change to update weight of winning
             node = node.parent
             
     opponent = player * -1
@@ -86,15 +83,12 @@ def findNextMove(board, player):
     rootNode.state.game = board
     rootNode.state.player = opponent
     i = 0
-    while (i < 100):
-        print(i)
+    # Change < than conditional in line 87 to dictate number of iterations.
+    while (i < 1000):
         # Select phase
         promisingNode = selectPromisingNode(rootNode)
         # Expand phase for active game
         if (promisingNode.state.game.checkVictory() == 2):
-            # print("drawing promising node state")
-            # promisingNode.state.game.draw()
-            # print("end")
             expandNode(promisingNode, opponent)
         # Simulate phase
         nodeToExplore = promisingNode

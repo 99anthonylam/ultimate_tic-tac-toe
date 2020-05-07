@@ -47,11 +47,6 @@ class tic_tac_toe:
     if not np.any(self.board==0):
       self.active = False
 
-
-
-
-
-
   def draw(self):
     for i, row in enumerate(self.board):
       row = list(map(self.map_to_xo,row))

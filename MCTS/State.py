@@ -12,7 +12,7 @@ class State:
     def getAllPossibleStates(self):
         # New game
         if self.game.last_move is None:
-            availPos = [x for x in range(11,100)]
+            availPos = [x for x in range(11,100) if x%10 != 0]
         
         # Active game
         elif self.game.board[(self.game.last_move % 10) -1].active:

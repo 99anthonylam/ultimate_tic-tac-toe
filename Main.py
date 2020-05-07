@@ -1,9 +1,5 @@
 from tic_tac_toe import *
 from ultimate_ttt import *
-# public class Node {
-#     Node parent:
-#     List<Node> children
-# }
 
 if __name__ == "__main__":
     # THIS SECTION FOR TESTING PURPOSES ONLY

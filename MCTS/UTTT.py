@@ -13,32 +13,40 @@ class UTTT:
     def checkVictory(self):
         g1, g2, g3, g4, g5, g6, g7, g8, g9 = self.board
 
-        # still active
-        if [game for game in self.board if game.active]:
-            self.status = 2
-            return 2
-
         # Check rows
         if (None != g1.winner == g2.winner == g3.winner):
             self.status = g1.winner
+            return self.status
         elif (None != g4.winner == g5.winner == g6.winner):
             self.status = g4.winner
+            return self.status
         elif (None != g7.winner == g8.winner == g9.winner):
             self.status = g7.winner
+            return self.status
 
         # Check columns
         elif (None != g1.winner == g4.winner == g7.winner):
             self.status = g1.winner
+            return self.status
         elif (None != g2.winner == g5.winner == g8.winner):
             self.status = g2.winner
+            return self.status
         elif (None != g3.winner == g6.winner == g9.winner):
             self.status = g3.winner
+            return self.status
 
         # Check diagonals
         elif (None != g1.winner == g5.winner == g9.winner):
             self.status = g1.winner
+            return self.status
         elif (None != g3.winner == g5.winner == g7.winner):
             self.status = g3.winner
+            return self.status
+
+        # Still active
+        if [game for game in self.board if game.active]:
+            self.status = 2
+            return 2
 
         # Check for tie    
         tie_flag = True

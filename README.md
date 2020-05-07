@@ -17,6 +17,9 @@ The main parameters are the scores assigned to winning and losing found in line 
 
 **For Minimax:**
 
+Running `Main.py` provides 3 options: play ultimate tic-tac-toe with 2 players, play against the Minimax agent, and pitting Minimax against itself.
+
+The bulk of customization and configuration is presented to the player at game start, but if finer tuning is sought for, then navigate to the heuristics function of ultimate_ttt.py. Each factor that contributes points is clearly labelled, and the depth setting can be overwritten by removing the parameter from `__init__()` of `minmax.py` at line 10. Higher numbers will result in deeper lookaheads and higher difficulty.
 
 &nbsp;
 
